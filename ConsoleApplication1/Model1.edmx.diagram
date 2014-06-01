@@ -4,10 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="39bbfc070b0a410399a22a96a78e0be8" Name="Diagram1" >
+      <Diagram DiagramId="39bbfc070b0a410399a22a96a78e0be8" Name="Diagram1" ZoomLevel="93" >
         <EntityTypeShape EntityType="Model1.Track" Width="1.5" PointX="4.875" PointY="0.875" />
         <EntityTypeShape EntityType="Model1.Playlist" Width="1.5" PointX="2" PointY="0.875" />
-      </Diagram>
+        <EntityTypeShape EntityType="Model1.SupplementalPlaylist" Width="1.5" PointX="2" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model1.CurrentPlaylist" Width="1.5" PointX="6.875" PointY="0.875" />
+        <EntityTypeShape EntityType="Model1.PlaylistView" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="Model1.SupplementalPlaylistView" Width="1.5" PointX="2.75" PointY="4.75" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

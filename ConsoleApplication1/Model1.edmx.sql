@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/29/2014 23:34:21
+-- Date Created: 06/01/2014 15:08:23
 -- Generated from EDMX file: C:\Users\shrug\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\Model1.edmx
 -- --------------------------------------------------
 
@@ -22,6 +22,21 @@ GO
 -- Dropping existing tables
 -- --------------------------------------------------
 
+IF OBJECT_ID(N'[dbo].[PlaylistSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[PlaylistSet];
+GO
+IF OBJECT_ID(N'[dbo].[SupplementalPlaylistSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[SupplementalPlaylistSet];
+GO
+IF OBJECT_ID(N'[dbo].[TrackSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TrackSet];
+GO
+IF OBJECT_ID(N'[Model1StoreContainer].[PlaylistView]', 'U') IS NOT NULL
+    DROP TABLE [Model1StoreContainer].[PlaylistView];
+GO
+IF OBJECT_ID(N'[Model1StoreContainer].[SupplementalPlaylistView]', 'U') IS NOT NULL
+    DROP TABLE [Model1StoreContainer].[SupplementalPlaylistView];
+GO
 
 -- --------------------------------------------------
 -- Creating all tables
@@ -49,6 +64,40 @@ CREATE TABLE [dbo].[PlaylistSet] (
 );
 GO
 
+-- Creating table 'SupplementalPlaylistSet'
+CREATE TABLE [dbo].[SupplementalPlaylistSet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [TrackId] int  NOT NULL,
+    [Owner] nvarchar(max)  NOT NULL
+);
+GO
+
+-- Creating table 'PlaylistView'
+CREATE TABLE [dbo].[PlaylistView] (
+    [Id] int  NOT NULL,
+    [artist] nvarchar(max)  NULL,
+    [title] nvarchar(max)  NULL
+);
+GO
+
+-- Creating table 'SupplementalPlaylistView'
+CREATE TABLE [dbo].[SupplementalPlaylistView] (
+    [Id] int  NOT NULL,
+    [artist] nvarchar(max)  NULL,
+    [title] nvarchar(max)  NULL,
+    [Owner] nvarchar(max)  NOT NULL
+);
+GO
+
+-- Creating table 'CurrentPlaylistSet'
+CREATE TABLE [dbo].[CurrentPlaylistSet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [pos] int  NOT NULL,
+    [artist] nvarchar(max)  NOT NULL,
+    [title] nvarchar(max)  NOT NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -62,6 +111,30 @@ GO
 -- Creating primary key on [Id] in table 'PlaylistSet'
 ALTER TABLE [dbo].[PlaylistSet]
 ADD CONSTRAINT [PK_PlaylistSet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'SupplementalPlaylistSet'
+ALTER TABLE [dbo].[SupplementalPlaylistSet]
+ADD CONSTRAINT [PK_SupplementalPlaylistSet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'PlaylistView'
+ALTER TABLE [dbo].[PlaylistView]
+ADD CONSTRAINT [PK_PlaylistView]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'SupplementalPlaylistView'
+ALTER TABLE [dbo].[SupplementalPlaylistView]
+ADD CONSTRAINT [PK_SupplementalPlaylistView]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'CurrentPlaylistSet'
+ALTER TABLE [dbo].[CurrentPlaylistSet]
+ADD CONSTRAINT [PK_CurrentPlaylistSet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 

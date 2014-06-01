@@ -76,6 +76,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurrentPlaylist.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Playlist.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PlaylistHandler.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="Model1.Context.cs">
@@ -101,7 +108,7 @@
     <Compile Include="MpdResponse.cs" />
     <Compile Include="MpdStatistics.cs" />
     <Compile Include="MpdStatus.cs" />
-    <Compile Include="Playlist.cs">
+    <Compile Include="PlaylistView.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -117,6 +124,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="SoitinStateMachine.cs" />
+    <Compile Include="SupplementalPlaylist.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SupplementalPlaylistView.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Track.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

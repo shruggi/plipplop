@@ -30,16 +30,21 @@ namespace ConsoleApplication1
         //  protected SoitinStates SoitinState;  
         protected MpcConnection MPConnection;
         protected Mpc MPClient;
+        protected IHubProxy msgrelay = null;
 
         protected string Address;
         protected int Port;
 
-        public SoitinStateMachine(string Address, int Port)
+        // used for triggering queue function
+        protected int playlistsize = 0;
+
+        public SoitinStateMachine(string Address, int Port, IHubProxy msgrelay)
         {
             StateQueue.Enqueue(SoitinStates.INIT);
 
             this.Address = Address;
             this.Port = Port;
+            this.msgrelay = msgrelay;
 
         }
 
@@ -93,8 +98,25 @@ namespace ConsoleApplication1
                     try
                     {
                         MpdStatus status = MPClient.Status();
+                        MpdFile currenttrack = MPClient.CurrentSong();
+
+                        var playlist = MPClient.PlaylistInfo();
+                        using (MopidyContext db = new MopidyContext()) 
+                        {
+                            var query = (from a in db.PlaylistSet join b in db.TrackSet on a.TrackId equals b.Id select b.weight).Sum();
+                            Console.WriteLine(query);
+                        }
+                        
+
                         Console.WriteLine(status.Volume);
-                        Thread.Sleep(500);
+                        
+                        if (currenttrack != null && status.State == MpdState.Play)
+                        {
+                            string trackname = currenttrack.Artist.ToString() + " - " + currenttrack.Title.ToString();
+                            msgrelay.Invoke("StatusUpdate", trackname, status.TimeElapsed, status.TimeTotal);
+                            Console.WriteLine(currenttrack.Title.ToString());
+                        }
+                        Thread.Sleep(1000);
                     }
                     catch
                     {
@@ -110,7 +132,7 @@ namespace ConsoleApplication1
                     List<MpdFile> filelist = MPClient.ListAllInfo("\"/\"");
                     using (var db = new MopidyContext())
                     {
-                        
+
                         foreach (MpdFile file in filelist)
                         {
                             var jee = db.TrackSet.Where(a => a.album == file.Album && a.artist == file.Artist && a.title == file.Title).ToList();
@@ -126,6 +148,7 @@ namespace ConsoleApplication1
                             track.genre = file.Genre;
                             track.filename = file.File;
                             track.runningtime = file.Time;
+                            track.weight = 1;
                             if (file.HasDate)
                             {
                                 track.date = DateTime.Parse(file.Date);

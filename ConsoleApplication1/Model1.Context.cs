@@ -27,5 +27,9 @@ namespace ConsoleApplication1
     
         public virtual DbSet<Track> TrackSet { get; set; }
         public virtual DbSet<Playlist> PlaylistSet { get; set; }
+        public virtual DbSet<SupplementalPlaylist> SupplementalPlaylistSet { get; set; }
+        public virtual DbSet<CurrentPlaylist> CurrentPlaylistSet { get; set; }
+        public virtual DbSet<PlaylistView> PlaylistView { get; set; }
+        public virtual DbSet<SupplementalPlaylistView> SupplementalPlaylistView { get; set; }
     }
 }

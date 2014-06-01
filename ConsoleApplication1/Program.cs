@@ -24,7 +24,7 @@ namespace ConsoleApplication1
             var hubConnection = new HubConnection("http://localhost:53731/");
             var msgrelay = hubConnection.CreateHubProxy("MsgHub");
             
-            SoitinStateMachine kone = new SoitinStateMachine(Address, Port);
+            SoitinStateMachine kone = new SoitinStateMachine(Address, Port, msgrelay);
 
             msgrelay.On<string>("broadcastMessage", (state) =>
             {

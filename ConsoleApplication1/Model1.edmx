@@ -4,41 +4,100 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityContainer Name="Model1StoreContainer">
-    <EntitySet Name="TrackSet" EntityType="Model1.Store.TrackSet" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="PlaylistSet" EntityType="Model1.Store.PlaylistSet" store:Type="Tables" Schema="dbo" />
-  </EntityContainer>
-  <EntityType Name="TrackSet">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="album" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="title" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="track" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="artist" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="genre" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="filename" Type="nvarchar(max)" Nullable="true" />
-    <Property Name="runningtime" Type="int" Nullable="true" />
-    <Property Name="date" Type="datetime" Nullable="true" />
-    <Property Name="weight" Type="int" Nullable="true" />
-  </EntityType>
-  <EntityType Name="PlaylistSet">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="TrackId" Type="int" Nullable="false" />
-  </EntityType>
-</Schema></edmx:StorageModels>
+    <Schema Namespace="Model1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CurrentPlaylistSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="pos" Type="int" Nullable="false" />
+          <Property Name="artist" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="title" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PlaylistSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TrackId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SupplementalPlaylistSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TrackId" Type="int" Nullable="false" />
+          <Property Name="Owner" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TrackSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="album" Type="nvarchar(max)" />
+          <Property Name="title" Type="nvarchar(max)" />
+          <Property Name="track" Type="nvarchar(max)" />
+          <Property Name="artist" Type="nvarchar(max)" />
+          <Property Name="genre" Type="nvarchar(max)" />
+          <Property Name="filename" Type="nvarchar(max)" />
+          <Property Name="runningtime" Type="int" />
+          <Property Name="date" Type="datetime" />
+          <Property Name="weight" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Mopidy.dbo.PlaylistView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PlaylistView">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="artist" Type="nvarchar(max)" />
+          <Property Name="title" Type="nvarchar(max)" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Mopidy.dbo.SupplementalPlaylistView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="SupplementalPlaylistView">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="artist" Type="nvarchar(max)" />
+          <Property Name="title" Type="nvarchar(max)" />
+          <Property Name="Owner" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="Model1StoreContainer">
+          <EntitySet Name="CurrentPlaylistSet" EntityType="Self.CurrentPlaylistSet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlaylistSet" EntityType="Self.PlaylistSet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SupplementalPlaylistSet" EntityType="Self.SupplementalPlaylistSet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TrackSet" EntityType="Self.TrackSet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlaylistView" EntityType="Self.PlaylistView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [PlaylistView].[Id] AS [Id], 
+    [PlaylistView].[artist] AS [artist], 
+    [PlaylistView].[title] AS [title]
+    FROM [dbo].[PlaylistView] AS [PlaylistView]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="SupplementalPlaylistView" EntityType="Self.SupplementalPlaylistView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [SupplementalPlaylistView].[Id] AS [Id], 
+    [SupplementalPlaylistView].[artist] AS [artist], 
+    [SupplementalPlaylistView].[title] AS [title], 
+    [SupplementalPlaylistView].[Owner] AS [Owner]
+    FROM [dbo].[SupplementalPlaylistView] AS [SupplementalPlaylistView]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
         <EntityContainer Name="MopidyContext" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="TrackSet" EntityType="Model1.Track" />
           <EntitySet Name="PlaylistSet" EntityType="Model1.Playlist" />
-        </EntityContainer>
+          <EntitySet Name="SupplementalPlaylistSet" EntityType="Model1.SupplementalPlaylist" />
+          <EntitySet Name="CurrentPlaylistSet" EntityType="Model1.CurrentPlaylist" />
+          <EntitySet Name="PlaylistView" EntityType="Model1.PlaylistView" />
+          <EntitySet Name="SupplementalPlaylistView" EntityType="Model1.SupplementalPlaylistView" />
+          </EntityContainer>
         <EntityType Name="Track">
           <Key>
             <PropertyRef Name="Id" />
@@ -51,7 +110,7 @@
           <Property Name="genre" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="true" />
           <Property Name="filename" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="true" />
           <Property Name="runningtime" Type="Int32" Nullable="true" />
-          <Property Name="date" Type="DateTime" Nullable="true" />
+          <Property Name="date" Type="DateTime" Nullable="true" Precision="3" />
           <Property Name="weight" Type="Int32" Nullable="true" />
         </EntityType>
         <EntityType Name="Playlist">
@@ -61,7 +120,41 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TrackId" Type="Int32" Nullable="false" />
         </EntityType>
-      </Schema>
+        <EntityType Name="SupplementalPlaylist">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TrackId" Type="Int32" Nullable="false" />
+          <Property Name="Owner" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="CurrentPlaylist">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="pos" Type="Int32" Nullable="false" />
+          <Property Name="artist" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="PlaylistView">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="artist" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SupplementalPlaylistView">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="artist" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Owner" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -91,7 +184,45 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-  </EntityContainerMapping>
+    <EntitySetMapping Name="SupplementalPlaylistSet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.SupplementalPlaylist)">
+        <MappingFragment StoreEntitySet="SupplementalPlaylistSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TrackId" ColumnName="TrackId" />
+          <ScalarProperty Name="Owner" ColumnName="Owner" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CurrentPlaylistSet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.CurrentPlaylist)">
+        <MappingFragment StoreEntitySet="CurrentPlaylistSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="pos" ColumnName="pos" />
+          <ScalarProperty Name="artist" ColumnName="artist" />
+          <ScalarProperty Name="title" ColumnName="title" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+          <EntitySetMapping Name="PlaylistView">
+            <EntityTypeMapping TypeName="Model1.PlaylistView">
+              <MappingFragment StoreEntitySet="PlaylistView">
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="artist" ColumnName="artist" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SupplementalPlaylistView">
+            <EntityTypeMapping TypeName="Model1.SupplementalPlaylistView">
+              <MappingFragment StoreEntitySet="SupplementalPlaylistView">
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="artist" ColumnName="artist" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
@@ -107,6 +238,7 @@
         <DesignerProperty Name="EnablePluralization" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
         <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
       </DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
