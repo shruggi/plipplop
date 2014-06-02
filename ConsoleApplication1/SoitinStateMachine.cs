@@ -23,7 +23,8 @@ namespace ConsoleApplication1
             MONITOR,
             FILL,
             UPDATE,
-            HALT
+            HALT,
+            QUEUE
         }
         protected Queue<SoitinStates> StateQueue = new Queue<SoitinStates>();
         
@@ -31,11 +32,13 @@ namespace ConsoleApplication1
         protected MpcConnection MPConnection;
         protected Mpc MPClient;
         protected IHubProxy msgrelay = null;
+        protected PlaylistHandler PLHandler = null;
 
         protected string Address;
         protected int Port;
+        protected int QueueLength = 3;
 
-        // used for triggering queue function
+        // used for triggering currentPlaylist update
         protected int playlistsize = 0;
 
         public SoitinStateMachine(string Address, int Port, IHubProxy msgrelay)
@@ -45,7 +48,6 @@ namespace ConsoleApplication1
             this.Address = Address;
             this.Port = Port;
             this.msgrelay = msgrelay;
-
         }
 
         public void QueueUpdate()
@@ -75,6 +77,10 @@ namespace ConsoleApplication1
             Console.WriteLine("Creating Mpc object");
             MPClient = new Mpc();
             MPClient.Connection = MPConnection;
+            if (PLHandler == null)
+            {
+                PLHandler = new PlaylistHandler(MPClient);
+            }
 
             // If not coming from update loop (ie. queue is empty) -> queue default loop state.
             if (StateQueue.Count == 0)
@@ -99,23 +105,39 @@ namespace ConsoleApplication1
                     {
                         MpdStatus status = MPClient.Status();
                         MpdFile currenttrack = MPClient.CurrentSong();
-
                         var playlist = MPClient.PlaylistInfo();
-                        using (MopidyContext db = new MopidyContext()) 
-                        {
-                            var query = (from a in db.PlaylistSet join b in db.TrackSet on a.TrackId equals b.Id select b.weight).Sum();
-                            Console.WriteLine(query);
-                        }
-                        
+                        //using (MopidyContext db = new MopidyContext()) 
+                        //{
+                        //    var query = (from a in db.PlaylistSet join b in db.TrackSet on a.TrackId equals b.Id select new { b.Id, b.weight }).ToArray();
 
-                        Console.WriteLine(status.Volume);
-                        
+                        //    Console.WriteLine(query);
+                        //}
+
+                        // Trigger playlist update
+                        if (playlistsize > status.PlaylistLength)
+                        {
+                            using (MopidyContext db = new MopidyContext())
+                            {
+
+                            }
+                        }
+                        playlistsize = status.PlaylistLength;
+                        if (status.PlaylistLength <= 1)
+                        {
+                            StateQueue.Enqueue(SoitinStates.QUEUE);
+                            Console.WriteLine("QUEUE state queued.");
+                        }
                         if (currenttrack != null && status.State == MpdState.Play)
                         {
                             string trackname = currenttrack.Artist.ToString() + " - " + currenttrack.Title.ToString();
                             msgrelay.Invoke("StatusUpdate", trackname, status.TimeElapsed, status.TimeTotal);
                             Console.WriteLine(currenttrack.Title.ToString());
                         }
+                        Console.WriteLine("State: " + status.State.ToString());
+                        Console.WriteLine("PlaylistLength: " + status.PlaylistLength.ToString());
+                        Console.WriteLine();
+
+
                         Thread.Sleep(1000);
                     }
                     catch
@@ -160,9 +182,6 @@ namespace ConsoleApplication1
                         }
                         db.SaveChanges();
                     }
-
-                    
-
                     //SqlParameter dbname = new SqlParameter("@dbname", "MopidyDatabaseWeightsSum");
                     //List<SqlParameter> parameterlist = new List<SqlParameter>();
                     //DataTable table = DBHandler.RunSelectQuery("SELECT * from MopidyDatabaseWeightsSum;", CommandType.Text, parameterlist);
@@ -172,6 +191,38 @@ namespace ConsoleApplication1
                     //StateQueue.Enqueue(SoitinStates.INIT);
                     break;
                 case SoitinStates.HALT:
+                    break;
+                case SoitinStates.QUEUE:
+                    using (MopidyContext db = new MopidyContext()) 
+                    {
+                        DateTime listidentifier = new DateTime();
+                        List<string> queuelist = new List<string>();
+
+                        if (db.SupplementalPlaylistSet.Count() > 0)
+                        {
+                            listidentifier = PLHandler.QueueUsertracks();
+                            queuelist = (from a in db.QueuelistSet join b in db.TrackSet on a.TrackId equals b.Id orderby a.Id descending select b.filename).Take(1).ToList();
+                            foreach (var track in queuelist)
+                            {
+                                MPClient.Add("\"" + track + "\"");
+                            }
+                            Console.WriteLine("Queued user track");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("No tracks submitted by users.");
+                        }
+
+                        listidentifier = PLHandler.QueueCoretracks(QueueLength);
+                        queuelist = (from a in db.QueuelistSet join b in db.TrackSet on a.TrackId equals b.Id where a.addtime >= listidentifier select b.filename).ToList();
+                        foreach (var track in queuelist) 
+                        {
+                            MPClient.Add("\""+track+"\"");
+                        }
+                        Console.WriteLine("Queued next tracks!");
+                    }
+                    
                     break;
             }
             // If queue is empty, put default loop state in, otherwise just keep emptying the queue

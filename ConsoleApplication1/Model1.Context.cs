@@ -31,5 +31,6 @@ namespace ConsoleApplication1
         public virtual DbSet<CurrentPlaylist> CurrentPlaylistSet { get; set; }
         public virtual DbSet<PlaylistView> PlaylistView { get; set; }
         public virtual DbSet<SupplementalPlaylistView> SupplementalPlaylistView { get; set; }
+        public virtual DbSet<Queuelist> QueuelistSet { get; set; }
     }
 }

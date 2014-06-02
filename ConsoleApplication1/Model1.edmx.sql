@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 06/01/2014 15:08:23
+-- Date Created: 06/01/2014 18:33:04
 -- Generated from EDMX file: C:\Users\shrug\Documents\Visual Studio 2013\Projects\ConsoleApplication1\ConsoleApplication1\Model1.edmx
 -- --------------------------------------------------
 
@@ -22,20 +22,26 @@ GO
 -- Dropping existing tables
 -- --------------------------------------------------
 
+IF OBJECT_ID(N'[dbo].[TrackSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TrackSet];
+GO
 IF OBJECT_ID(N'[dbo].[PlaylistSet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[PlaylistSet];
 GO
 IF OBJECT_ID(N'[dbo].[SupplementalPlaylistSet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[SupplementalPlaylistSet];
 GO
-IF OBJECT_ID(N'[dbo].[TrackSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TrackSet];
+IF OBJECT_ID(N'[dbo].[CurrentPlaylistSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[CurrentPlaylistSet];
 GO
-IF OBJECT_ID(N'[Model1StoreContainer].[PlaylistView]', 'U') IS NOT NULL
-    DROP TABLE [Model1StoreContainer].[PlaylistView];
+IF OBJECT_ID(N'[dbo].[PlaylistView]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[PlaylistView];
 GO
-IF OBJECT_ID(N'[Model1StoreContainer].[SupplementalPlaylistView]', 'U') IS NOT NULL
-    DROP TABLE [Model1StoreContainer].[SupplementalPlaylistView];
+IF OBJECT_ID(N'[dbo].[SupplementalPlaylistView]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[SupplementalPlaylistView];
+GO
+IF OBJECT_ID(N'[dbo].[QueuelistSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[QueuelistSet];
 GO
 
 -- --------------------------------------------------
@@ -72,6 +78,15 @@ CREATE TABLE [dbo].[SupplementalPlaylistSet] (
 );
 GO
 
+-- Creating table 'CurrentPlaylistSet'
+CREATE TABLE [dbo].[CurrentPlaylistSet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [pos] int  NOT NULL,
+    [artist] nvarchar(max)  NOT NULL,
+    [title] nvarchar(max)  NOT NULL
+);
+GO
+
 -- Creating table 'PlaylistView'
 CREATE TABLE [dbo].[PlaylistView] (
     [Id] int  NOT NULL,
@@ -89,12 +104,12 @@ CREATE TABLE [dbo].[SupplementalPlaylistView] (
 );
 GO
 
--- Creating table 'CurrentPlaylistSet'
-CREATE TABLE [dbo].[CurrentPlaylistSet] (
+-- Creating table 'QueuelistSet'
+CREATE TABLE [dbo].[QueuelistSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
-    [pos] int  NOT NULL,
-    [artist] nvarchar(max)  NOT NULL,
-    [title] nvarchar(max)  NOT NULL
+    [TrackId] int  NOT NULL,
+    [addtime] datetime  NOT NULL,
+    [source] nvarchar(max)  NOT NULL
 );
 GO
 
@@ -120,6 +135,12 @@ ADD CONSTRAINT [PK_SupplementalPlaylistSet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
+-- Creating primary key on [Id] in table 'CurrentPlaylistSet'
+ALTER TABLE [dbo].[CurrentPlaylistSet]
+ADD CONSTRAINT [PK_CurrentPlaylistSet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
 -- Creating primary key on [Id] in table 'PlaylistView'
 ALTER TABLE [dbo].[PlaylistView]
 ADD CONSTRAINT [PK_PlaylistView]
@@ -132,9 +153,9 @@ ADD CONSTRAINT [PK_SupplementalPlaylistView]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
--- Creating primary key on [Id] in table 'CurrentPlaylistSet'
-ALTER TABLE [dbo].[CurrentPlaylistSet]
-ADD CONSTRAINT [PK_CurrentPlaylistSet]
+-- Creating primary key on [Id] in table 'QueuelistSet'
+ALTER TABLE [dbo].[QueuelistSet]
+ADD CONSTRAINT [PK_QueuelistSet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 

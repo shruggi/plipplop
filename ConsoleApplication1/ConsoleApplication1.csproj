@@ -123,6 +123,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Queuelist.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="SoitinStateMachine.cs" />
     <Compile Include="SupplementalPlaylist.cs">
       <DependentUpon>Model1.tt</DependentUpon>

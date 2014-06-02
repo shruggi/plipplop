@@ -35,7 +35,16 @@ namespace ConsoleApplication1
                 //    kone.QueueUpdate();
                 //}
             });
-            hubConnection.Start().Wait();
+            try
+            {
+                hubConnection.Start().Wait();
+            }
+            catch
+            {
+                Console.WriteLine("Unable to connect to Hub, check that web server is up and running.");
+                return;
+            }
+            
             //msgrelay.Invoke("Send", "Ugalabugala");
             
             while (true)
